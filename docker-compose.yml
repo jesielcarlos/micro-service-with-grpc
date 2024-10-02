@@ -1,0 +1,38 @@
+services:
+  server:
+    build: ./server
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./server:/app
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - services_network
+  client:
+    build: ./client
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./client:/app
+    restart: always
+    depends_on:
+      - server
+      - db
+    networks:
+      - services_network
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    networks:
+      - services_network
+networks:
+    services_network:
+      driver: bridge
